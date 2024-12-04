@@ -40,7 +40,7 @@
 
     <!-- Main Content -->
     <div class="container mt-5">
-      <h3>Manage Students</h3>
+      <h3>Manage Projects</h3>
       <form id="projectForm" class="mt-4">
         <div class="mb-3">
           <label for="projectName" class="form-label">Project Name</label>
@@ -57,15 +57,10 @@
           <input type="date" id="deadline" class="form-control" required />
         </div>
         <div class="mb-3">
-          <label for="studentsSelect" class="form-label"
-            >Assign Students (select 2-3)</label
-          >
-          <select
-            id="studentsSelect"
-            class="form-select"
-            multiple
-            required
-          ></select>
+          <label for="studentsSelect" class="form-label">Assign Student</label>
+          <select id="studentsSelect" class="form-select" required>
+            <option value="">Select a student</option>
+          </select>
         </div>
         <input type="hidden" id="projectId" />
         <button type="submit" class="btn btn-primary">Create Project</button>
@@ -73,5 +68,7 @@
       <h3 class="mt-5">Projects List</h3>
       <ul id="projectsList" class="list-group mt-3"></ul>
     </div>
+
+    <script src="/scripts/projects.js"></script>
   </body>
 </html>
