@@ -5,6 +5,7 @@ const $addStudentButton = $("#addStudentButton");
 const $updateStudentButton = $("#updateStudentButton");
 const $searchStudentInput = $("#searchStudent");
 const $studentsList = $("#studentsList");
+const $studentForm = $("#studentForm"); // Added form reference
 
 // Function to generate a random ID
 function generateId() {
@@ -23,33 +24,38 @@ function saveStudents(students) {
 
 // Function to render the student list
 function renderStudents(students = getStudents()) {
-  $studentsList.innerHTML = ""; //html(""); // Clear the list
+  // Properly clear the list using jQuery
+  $studentsList.empty();
+
   if (students.length === 0) {
     $studentsList.html(
       '<p class="text-muted">No students found. Add a student to get started!</p>'
     );
     return;
   }
+
   students.forEach((student) => {
-    const $studentCard = $("<div></div>"); // document.createElement("div");
-    $studentCard.addClass("col-md-4", "mb-3");
-    $studentCard.html(`
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">${student.name}</h5>
-          <button class="btn btn-warning btn-sm" onclick="loadStudentForUpdate('${student.id}')">Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteStudent('${student.id}')">Delete</button>
+    const $studentCard = $("<div>").addClass("col-md-4 mb-3").html(`
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">${student.name}</h5>
+            <button class="btn btn-warning btn-sm edit-student" data-id="${student.id}">Edit</button>
+            <button class="btn btn-danger btn-sm delete-student" data-id="${student.id}">Delete</button>
+          </div>
         </div>
-      </div>
-    `);
+      `);
     $studentsList.append($studentCard);
   });
 }
 
 // Function to add a student
-function addStudent() {
+function addStudent(e) {
+  e.preventDefault();
   const name = $studentNameInput.val().trim();
-  if (!name) return alert("Student name is required.");
+  if (!name) {
+    alert("Student name is required.");
+    return;
+  }
 
   const students = getStudents();
   const newStudent = {
@@ -60,7 +66,7 @@ function addStudent() {
   students.push(newStudent);
   saveStudents(students);
   renderStudents();
-  studentForm.reset();
+  $studentForm[0].reset();
 }
 
 // Function to load a student into the form for updating
@@ -68,35 +74,43 @@ function loadStudentForUpdate(id) {
   const students = getStudents();
   const student = students.find((student) => student.id === id);
 
-  if (!student) return alert("Student not found.");
+  if (!student) {
+    alert("Student not found.");
+    return;
+  }
 
-  // Populate the form with the student's data
   $studentNameInput.val(student.name);
   $studentIdInput.val(student.id);
 
-  // Show the Update button and hide the Add button
   $addStudentButton.addClass("d-none");
   $updateStudentButton.removeClass("d-none");
 }
 
 // Function to update a student
-function updateStudent() {
+function updateStudent(e) {
+  e.preventDefault();
   const name = $studentNameInput.val().trim();
   const id = $studentIdInput.val();
 
-  if (!name || !id) return alert("Student name and valid ID are required.");
+  if (!name || !id) {
+    alert("Student name and valid ID are required.");
+    return;
+  }
 
   const students = getStudents();
   const studentIndex = students.findIndex((student) => student.id === id);
 
-  if (studentIndex === -1) return alert("Student not found.");
+  if (studentIndex === -1) {
+    alert("Student not found.");
+    return;
+  }
 
   students[studentIndex].name = name;
   saveStudents(students);
   renderStudents();
 
   // Reset form and buttons
-  studentForm.reset();
+  $studentForm[0].reset();
   $studentIdInput.val("");
   $addStudentButton.removeClass("d-none");
   $updateStudentButton.addClass("d-none");
@@ -104,15 +118,30 @@ function updateStudent() {
 
 // Function to delete a student
 function deleteStudent(id) {
+  if (!confirm("Are you sure you want to delete this student?")) {
+    return;
+  }
+
   let students = getStudents();
   students = students.filter((student) => student.id !== id);
   saveStudents(students);
   renderStudents();
 }
 
-// Function to search students
-$searchStudentInput.on("input", () => {
-  const searchText = $searchStudentInput.val().toLowerCase();
+// Event Delegation for dynamically created buttons
+$studentsList.on("click", ".edit-student", function () {
+  const id = $(this).data("id");
+  loadStudentForUpdate(id);
+});
+
+$studentsList.on("click", ".delete-student", function () {
+  const id = $(this).data("id");
+  deleteStudent(id);
+});
+
+// Search functionality
+$searchStudentInput.on("input", function () {
+  const searchText = $(this).val().toLowerCase();
   const students = getStudents().filter((student) =>
     student.name.toLowerCase().includes(searchText)
   );
@@ -124,4 +153,6 @@ $addStudentButton.on("click", addStudent);
 $updateStudentButton.on("click", updateStudent);
 
 // Initial render
-renderStudents();
+$(document).ready(function () {
+  renderStudents();
+});
