@@ -1,24 +1,20 @@
-// setTimeout(() => {
-//   document.getElementById("dateTimeNow").innerHTML = new Date();
-// }, 10000);
-
-let dateTimeNowP = document.getElementById("dateTimeNow");
+let $dateTimeNow = $("#dateTimeNow");
+let $appH1 = $("#appH1");
+let $appP = $("#appP");
 
 const intervalId = setInterval(() => {
-  dateTimeNowP.innerHTML = new Date();
+  $dateTimeNow.html(new Date());
 }, 1000);
 
 setTimeout(() => {
   clearInterval(intervalId);
-  document.getElementById("dateTimeNow").innerHTML = ""; //.remove();
+  $dateTimeNow.html("");
 }, 10000);
 
-document.getElementById("appH1").addEventListener("click", () => {
-  document.getElementById("dateTimeNow").innerHTML =
-    "H1 u klikua: " + new Date();
+$appH1.on("click", () => {
+  $dateTimeNow.html("H1 u klikua: " + new Date());
 });
 
-document.getElementById("appP").addEventListener("click", () => {
-  document.getElementById("dateTimeNow").innerHTML =
-    "P u klikua: " + new Date();
+$appP.on("click", () => {
+  $dateTimeNow.html("P u klikua: " + new Date());
 });

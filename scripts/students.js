@@ -1,10 +1,10 @@
 // Get references to the DOM elements
-const studentNameInput = document.getElementById("studentName");
-const studentIdInput = document.getElementById("studentId");
-const addStudentButton = document.getElementById("addStudentButton");
-const updateStudentButton = document.getElementById("updateStudentButton");
-const searchStudentInput = document.getElementById("searchStudent");
-const studentsList = document.getElementById("studentsList");
+const $studentNameInput = $("#studentName");
+const $studentIdInput = $("#studentId");
+const $addStudentButton = $("#addStudentButton");
+const $updateStudentButton = $("#updateStudentButton");
+const $searchStudentInput = $("#searchStudent");
+const $studentsList = $("#studentsList");
 
 // Function to generate a random ID
 function generateId() {
@@ -23,16 +23,17 @@ function saveStudents(students) {
 
 // Function to render the student list
 function renderStudents(students = getStudents()) {
-  studentsList.innerHTML = ""; // Clear the list
+  $studentsList.innerHTML = ""; //html(""); // Clear the list
   if (students.length === 0) {
-    studentsList.innerHTML =
-      '<p class="text-muted">No students found. Add a student to get started!</p>';
+    $studentsList.html(
+      '<p class="text-muted">No students found. Add a student to get started!</p>'
+    );
     return;
   }
   students.forEach((student) => {
-    const studentCard = document.createElement("div");
-    studentCard.classList.add("col-md-4", "mb-3");
-    studentCard.innerHTML = `
+    const $studentCard = $("<div></div>"); // document.createElement("div");
+    $studentCard.addClass("col-md-4", "mb-3");
+    $studentCard.html(`
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">${student.name}</h5>
@@ -40,14 +41,14 @@ function renderStudents(students = getStudents()) {
           <button class="btn btn-danger btn-sm" onclick="deleteStudent('${student.id}')">Delete</button>
         </div>
       </div>
-    `;
-    studentsList.appendChild(studentCard);
+    `);
+    $studentsList.append($studentCard);
   });
 }
 
 // Function to add a student
 function addStudent() {
-  const name = studentNameInput.value.trim();
+  const name = $studentNameInput.val().trim();
   if (!name) return alert("Student name is required.");
 
   const students = getStudents();
@@ -70,18 +71,18 @@ function loadStudentForUpdate(id) {
   if (!student) return alert("Student not found.");
 
   // Populate the form with the student's data
-  studentNameInput.value = student.name;
-  studentIdInput.value = student.id;
+  $studentNameInput.val(student.name);
+  $studentIdInput.val(student.id);
 
   // Show the Update button and hide the Add button
-  addStudentButton.classList.add("d-none");
-  updateStudentButton.classList.remove("d-none");
+  $addStudentButton.addClass("d-none");
+  $updateStudentButton.removeClass("d-none");
 }
 
 // Function to update a student
 function updateStudent() {
-  const name = studentNameInput.value.trim();
-  const id = studentIdInput.value;
+  const name = $studentNameInput.val().trim();
+  const id = $studentIdInput.val();
 
   if (!name || !id) return alert("Student name and valid ID are required.");
 
@@ -96,9 +97,9 @@ function updateStudent() {
 
   // Reset form and buttons
   studentForm.reset();
-  studentIdInput.value = "";
-  addStudentButton.classList.remove("d-none");
-  updateStudentButton.classList.add("d-none");
+  $studentIdInput.val("");
+  $addStudentButton.removeClass("d-none");
+  $updateStudentButton.addClass("d-none");
 }
 
 // Function to delete a student
@@ -110,8 +111,8 @@ function deleteStudent(id) {
 }
 
 // Function to search students
-searchStudentInput.addEventListener("input", () => {
-  const searchText = searchStudentInput.value.toLowerCase();
+$searchStudentInput.on("input", () => {
+  const searchText = $searchStudentInput.val().toLowerCase();
   const students = getStudents().filter((student) =>
     student.name.toLowerCase().includes(searchText)
   );
@@ -119,8 +120,8 @@ searchStudentInput.addEventListener("input", () => {
 });
 
 // Event listeners for the buttons
-addStudentButton.addEventListener("click", addStudent);
-updateStudentButton.addEventListener("click", updateStudent);
+$addStudentButton.on("click", addStudent);
+$updateStudentButton.on("click", updateStudent);
 
 // Initial render
 renderStudents();
