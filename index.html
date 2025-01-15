@@ -43,6 +43,36 @@
       <h1 class="text-center" id="appH1">
         Welcome to the Project Management System
       </h1>
+      <p class="text-center mt-4">
+
+        <select id="fromLanguage">
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+          <option value="fr">French</option>
+          <option value="de">German</option>
+          <option value="sq">Shqip</option>
+        </select>
+
+        <br />
+        <select id="toLanguage">
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+          <option value="fr">French</option>
+          <option value="de">German</option>
+          <option value="sq">Shqip</option>
+        </select>
+
+        <input
+          type="text"
+          class="form-control"
+          id="translateInput"
+          placeholder="Enter text to translate"
+        />
+
+        <button class="btn btn-success" id="translateBtn">Translate</button>
+
+        <div id="translationPlaceholder"></div>
+      </p>
       <p class="text-center mt-4" id="appP">
         Use the navigation bar to manage projects, tasks, or teams.
       </p>
