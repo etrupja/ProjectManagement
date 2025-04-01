@@ -14,7 +14,46 @@ function generateId() {
 
 // Function to get students from localStorage
 function getStudents() {
-  return JSON.parse(localStorage.getItem("students")) || [];
+
+  const settings = {
+    crossDomain: true,
+    url: "https://localhost:7266/api/Students/GetStudents",
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    processData: false,
+  };
+
+  $.ajax(settings).done((response) => {
+    console.log('Load students from API - ', response);
+
+    // Properly clear the list using jQuery
+  $studentsList.empty();
+
+  if (response.length === 0) {
+    $studentsList.html(
+      '<p class="text-muted">No students found. Add a student to get started!</p>'
+    );
+    return;
+  }
+
+  response.forEach((student) => {
+    const $studentCard = $("<div>").addClass("col-md-4 mb-3").html(`
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">${student.fullName}</h5>
+            <button class="btn btn-warning btn-sm edit-student" data-id="${student.id}">Edit</button>
+            <button class="btn btn-danger btn-sm delete-student" data-id="${student.id}">Delete</button>
+          </div>
+        </div>
+      `);
+    $studentsList.append($studentCard);
+  });
+
+  });
+
+  // return JSON.parse(localStorage.getItem("students")) || [];
 }
 
 // Function to save students to localStorage
@@ -24,28 +63,7 @@ function saveStudents(students) {
 
 // Function to render the student list
 function renderStudents(students = getStudents()) {
-  // Properly clear the list using jQuery
-  $studentsList.empty();
-
-  if (students.length === 0) {
-    $studentsList.html(
-      '<p class="text-muted">No students found. Add a student to get started!</p>'
-    );
-    return;
-  }
-
-  students.forEach((student) => {
-    const $studentCard = $("<div>").addClass("col-md-4 mb-3").html(`
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">${student.name}</h5>
-            <button class="btn btn-warning btn-sm edit-student" data-id="${student.id}">Edit</button>
-            <button class="btn btn-danger btn-sm delete-student" data-id="${student.id}">Delete</button>
-          </div>
-        </div>
-      `);
-    $studentsList.append($studentCard);
-  });
+  
 }
 
 // Function to add a student
@@ -57,15 +75,28 @@ function addStudent(e) {
     return;
   }
 
-  const students = getStudents();
   const newStudent = {
-    id: generateId(),
-    name: name,
+    fullName: name,
   };
 
-  students.push(newStudent);
-  saveStudents(students);
-  renderStudents();
+  //add student to db
+  const settings = {
+    crossDomain: true,
+    url: "https://localhost:7266/api/Students/AddStudent",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: JSON.stringify(newStudent),
+    processData: false,
+  };
+
+  $.ajax(settings).done((response) => {
+     //refresh ui
+    getStudents();
+  });
+
+
   $studentForm[0].reset();
 }
 
@@ -122,10 +153,21 @@ function deleteStudent(id) {
     return;
   }
 
-  let students = getStudents();
-  students = students.filter((student) => student.id !== id);
-  saveStudents(students);
-  renderStudents();
+  //delete from db
+  const settings = {
+    crossDomain: true,
+    url: "https://localhost:7266/api/Students/DeleteStudent?studentId="+id,
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    processData: false,
+  };
+
+  $.ajax(settings).done((response) => {
+     //refresh ui
+    getStudents();
+  });
 }
 
 // Event Delegation for dynamically created buttons
